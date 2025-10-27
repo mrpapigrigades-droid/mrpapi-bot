@@ -1,18 +1,25 @@
+import os
 from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
-@app.route('/')
+# Homepage route
+@app.route("/")
 def home():
-    return render_template('index.html')
+    return render_template("index.html")
 
-@app.route('/get', methods=['POST'])
-def get_chat_response():
-    user_text = request.form['msg']
-    return jsonify({"response": chatbot_response(user_text)})
+# Chatbot response route
+@app.route("/chat", methods=["POST"])
+def chat():
+    user_message = request.json.get("message", "")
+    
+    # Here you can put your chatbot logic
+    # For now, it just echoes the user message
+    response = f"You said: {user_message}"
 
-def chatbot_response(text):
-    return "VincentAI: " + text
+    return jsonify({"reply": response})
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000)
+if __name__ == "__main__":
+    # Render provides PORT environment variable
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
