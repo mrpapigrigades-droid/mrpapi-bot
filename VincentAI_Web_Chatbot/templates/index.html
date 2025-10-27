@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VincentAI Chatbot</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; }
+        body { font-family: Arial; background: #f5f5f5; padding: 20px; }
         #chatbox { width: 100%; max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
         #messages { height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
         .message { margin: 5px 0; }
@@ -21,6 +21,7 @@
         <div id="messages"></div>
         <input type="text" id="userInput" placeholder="Type your message...">
         <button onclick="sendMessage()">Send</button>
+        <audio id="botAudio" controls style="display:none"></audio>
     </div>
 
     <script>
@@ -29,8 +30,9 @@
             const message = input.value.trim();
             if (!message) return;
 
-            // Display user message
             const messagesDiv = document.getElementById("messages");
+
+            // Show user message
             const userMsg = document.createElement("div");
             userMsg.classList.add("message", "user");
             userMsg.textContent = "You: " + message;
@@ -39,38 +41,31 @@
 
             input.value = "";
 
-            // Send message to backend
+            // Send to backend
             const response = await fetch("/chat", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message })
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({message})
             });
 
             const data = await response.json();
 
-            // Display bot response
+            // Show bot message
             const botMsg = document.createElement("div");
             botMsg.classList.add("message", "bot");
             botMsg.textContent = "Bot: " + data.reply;
             messagesDiv.appendChild(botMsg);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
-            // Speak the bot response
-            speakBot(data.reply);
+            // Play TTS
+            const audio = document.getElementById("botAudio");
+            audio.src = data.audio + "?v=" + new Date().getTime(); // prevent cache
+            audio.style.display = "block";
+            audio.play();
         }
 
-        function speakBot(text) {
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'en-US'; // change if you want another language
-                utterance.rate = 1; // speed (0.5 slow, 2 fast)
-                speechSynthesis.speak(utterance);
-            }
-        }
-
-        // Allow pressing Enter to send
-        document.getElementById("userInput").addEventListener("keydown", function(e) {
-            if (e.key === "Enter") sendMessage();
+        document.getElementById("userInput").addEventListener("keydown", e => {
+            if(e.key === "Enter") sendMessage();
         });
     </script>
 </body>
