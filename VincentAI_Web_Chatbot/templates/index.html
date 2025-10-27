@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VincentAI Chatbot 🤖</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #f5f5f5;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .chatbox {
+      width: 400px;
+      height: 500px;
+      border: 1px solid #333;
+      border-radius: 10px;
+      background-color: #1e1e1e;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+    }
+    .input-area {
+      display: flex;
+      border-top: 1px solid #333;
+    }
+    input {
+      flex: 1;
+      padding: 10px;
+      background: #2a2a2a;
+      color: white;
+      border: none;
+      outline: none;
+    }
+    button {
+      padding: 10px 15px;
+      background-color: #3a3a3a;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #505050;
+    }
+  </style>
+</head>
+<body>
+  <h1>VincentAI Chatbot 🤖</h1>
+  <div class="chatbox">
+    <div class="messages" id="messages"></div>
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Say something..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("userInput");
+      const msgBox = document.getElementById("messages");
+      const userMessage = input.value.trim();
+      if (!userMessage) return;
+      
+      msgBox.innerHTML += `<div><b>You:</b> ${userMessage}</div>`;
+      input.value = "";
+
+      const response = await fetch("/chat", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({message: userMessage})
+      });
+      const data = await response.json();
+
+      msgBox.innerHTML += `<div><b>VincentAI:</b> ${data.response}</div>`;
+      msgBox.scrollTop = msgBox.scrollHeight;
+
+      // Play voice
+      const audio = new Audio(data.audio);
+      audio.play();
+    }
+  </script>
+</body>
+</html>
