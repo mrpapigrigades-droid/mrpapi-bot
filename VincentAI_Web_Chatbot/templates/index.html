@@ -1,72 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VincentAI Chatbot</title>
-    <style>
-        body { font-family: Arial; background: #f5f5f5; padding: 20px; }
-        #chatbox { width: 100%; max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        #messages { height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
-        .message { margin: 5px 0; }
-        .user { font-weight: bold; color: #333; }
-        .bot { font-weight: bold; color: #007bff; }
-        input[type=text] { width: 80%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
-        button { padding: 10px 15px; border-radius: 5px; border: none; background: #007bff; color: #fff; cursor: pointer; }
-        button:hover { background: #0056b3; }
-    </style>
+<meta charset="UTF-8">
+<title>Vincent 🤖 Chatbot</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div id="chatbox">
-        <div id="messages"></div>
-        <input type="text" id="userInput" placeholder="Type your message...">
+<div class="chat-container">
+    <div id="chatbox"></div>
+    <div class="input-container">
+        <input type="text" id="message" placeholder="Type your message..." autofocus>
         <button onclick="sendMessage()">Send</button>
-        <audio id="botAudio" controls style="display:none"></audio>
     </div>
+</div>
 
-    <script>
-        async function sendMessage() {
-            const input = document.getElementById("userInput");
-            const message = input.value.trim();
-            if (!message) return;
+<script>
+async function sendMessage() {
+    const messageBox = document.getElementById('message');
+    const message = messageBox.value.trim();
+    if (!message) return;
 
-            const messagesDiv = document.getElementById("messages");
+    const chatbox = document.getElementById('chatbox');
+    chatbox.innerHTML += `
+        <div class="chat user-chat">
+            <div class="msg-content">You: ${message}</div>
+        </div>
+    `;
 
-            // Show user message
-            const userMsg = document.createElement("div");
-            userMsg.classList.add("message", "user");
-            userMsg.textContent = "You: " + message;
-            messagesDiv.appendChild(userMsg);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    const response = await fetch("/ask", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({message})
+    }).then(res => res.json());
 
-            input.value = "";
+    chatbox.innerHTML += `
+        <div class="chat bot-chat">
+            <img src="{{ url_for('static', filename='vincent.png') }}" class="avatar">
+            <div class="msg-content">Vincent 🤖: ${response.response}</div>
+        </div>
+    `;
 
-            // Send to backend
-            const response = await fetch("/chat", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({message})
-            });
-
-            const data = await response.json();
-
-            // Show bot message
-            const botMsg = document.createElement("div");
-            botMsg.classList.add("message", "bot");
-            botMsg.textContent = "Bot: " + data.reply;
-            messagesDiv.appendChild(botMsg);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-            // Play TTS
-            const audio = document.getElementById("botAudio");
-            audio.src = data.audio + "?v=" + new Date().getTime(); // prevent cache
-            audio.style.display = "block";
-            audio.play();
-        }
-
-        document.getElementById("userInput").addEventListener("keydown", e => {
-            if(e.key === "Enter") sendMessage();
-        });
-    </script>
+    messageBox.value = "";
+    chatbox.scrollTop = chatbox.scrollHeight;
+}
+</script>
 </body>
 </html>

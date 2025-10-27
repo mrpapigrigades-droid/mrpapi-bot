@@ -1,30 +1,24 @@
-const form = document.getElementById("chat-form");
-const chatBox = document.getElementById("chat-box");
+async function sendMessage() {
+  const input = document.getElementById("user-input");
+  const message = input.value.trim();
+  if (!message) return;
 
-form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const userInput = document.getElementById("user_input").value;
-    if (!userInput) return;
+  const chatBox = document.getElementById("chat-box");
+  chatBox.innerHTML += `<p class="user"><strong>You:</strong> ${message}</p>`;
 
-    // Display user message
-    const userMsg = document.createElement("p");
-    userMsg.innerHTML = `<strong>You:</strong> ${userInput}`;
-    chatBox.appendChild(userMsg);
+  input.value = "";
+  chatBox.scrollTop = chatBox.scrollHeight;
 
-    // Clear input
-    document.getElementById("user_input").value = "";
+  const response = await fetch("/get_response", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message }),
+  });
 
-    // Send to Flask
-    const response = await fetch("/ask", {
-        method: "POST",
-        body: new URLSearchParams({ user_input: userInput }),
-    });
+  const data = await response.json();
+  chatBox.innerHTML += `<p class="bot"><strong>Vincent:</strong> ${data.reply}</p>`;
+  chatBox.scrollTop = chatBox.scrollHeight;
 
-    const data = await response.json();
-    const botMsg = document.createElement("p");
-    botMsg.innerHTML = `<strong>VincentAI:</strong> ${data.answer}`;
-    chatBox.appendChild(botMsg);
-
-    // Scroll to bottom
-    chatBox.scrollTop = chatBox.scrollHeight;
-});
+  const audio = new Audio(data.audio);
+  audio.play();
+}

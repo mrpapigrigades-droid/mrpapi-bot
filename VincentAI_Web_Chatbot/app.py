@@ -1,43 +1,39 @@
-import os
 from flask import Flask, render_template, request, jsonify
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
-from gtts import gTTS
+import pyttsx3
 
 app = Flask(__name__)
 
-# Load small GPT-2 model (offline)
-MODEL_NAME = "gpt2"  # Replace with local model path if needed
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-model = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
+# Load tokenizer & model
+tokenizer = AutoTokenizer.from_pretrained("./model")
+model = AutoModelForCausalLM.from_pretrained("./model")
 
-# Keep chat history
-chat_history_ids = None
+# TTS setup (male voice)
+engine = pyttsx3.init()
+voices = engine.getProperty('voices')
+for v in voices:
+    if "male" in v.name.lower():
+        engine.setProperty('voice', v.id)
+        break
+engine.setProperty('rate', 160)
 
 @app.route("/")
 def home():
     return render_template("index.html")
 
-@app.route("/chat", methods=["POST"])
-def chat():
-    global chat_history_ids
-    user_message = request.json.get("message", "")
+@app.route("/ask", methods=["POST"])
+def ask():
+    user_input = request.json.get("message")
+    inputs = tokenizer.encode(user_input + tokenizer.eos_token, return_tensors="pt")
+    outputs = model.generate(inputs, max_length=200, pad_token_id=tokenizer.eos_token_id)
+    response = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
-    # Encode user input
-    new_input_ids = tokenizer.encode(user_message + tokenizer.eos_token, return_tensors='pt')
-    bot_input_ids = torch.cat([chat_history_ids, new_input_ids], dim=-1) if chat_history_ids is not None else new_input_ids
+    # Speak response
+    engine.say(response)
+    engine.runAndWait()
 
-    # Generate response
-    chat_history_ids = model.generate(bot_input_ids, max_length=1000, pad_token_id=tokenizer.eos_token_id)
-    bot_reply = tokenizer.decode(chat_history_ids[:, bot_input_ids.shape[-1]:][0], skip_special_tokens=True)
-
-    # Generate TTS
-    tts = gTTS(bot_reply)
-    audio_path = "static/bot_audio.mp3"
-    tts.save(audio_path)
-
-    return jsonify({"reply": bot_reply, "audio": audio_path})
+    return jsonify({"response": response})
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=5000, debug=True)
