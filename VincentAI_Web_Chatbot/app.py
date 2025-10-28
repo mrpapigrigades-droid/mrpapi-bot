@@ -3,39 +3,31 @@ import random
 
 app = Flask(__name__)
 
-# --- Simple AI responses ---
-cyborg_replies = [
-    "Greetings, human. I am CyBot, MrPapi’s AI assistant 🤖",
-    "Running a quick scan... everything looks stable ⚡",
-    "Cyborg online — how can I assist you today?",
-    "Processing that... one sec 🧠",
-    "MrPapi mode activated! Ready to chat 🔥"
+# Simple smart-ish responses
+responses = [
+    "Hey there! I'm MrPapi CyBot 🤖 — ready to roll!",
+    "What's up? Need help with something?",
+    "MrPapi CyBot at your service 🚀",
+    "Yo, I’m online and fully charged ⚡",
+    "Haha, that’s funny 😅 Tell me more!"
 ]
 
 @app.route('/')
 def home():
     return render_template('index.html')
 
-@app.route('/get', methods=['POST'])
-def chatbot_reply():
-    user_msg = request.form.get('msg').lower()
-
-    if "hello" in user_msg or "hi" in user_msg:
-        bot_text = "Hey there! I’m MrPapi CyBot 👾 How are you feeling today?"
-    elif "name" in user_msg:
-        bot_text = "I’m CyBot — a smart assistant built by MrPapi 💪"
-    elif "who" in user_msg:
-        bot_text = "I’m VincentAI, your friendly dark-mode cyborg assistant 🤖"
-    elif "help" in user_msg:
-        bot_text = "Sure! I can chat, give info, and make your day smoother 😎"
+@app.route('/chat', methods=['POST'])
+def chat():
+    user_msg = request.json.get('message', '').lower()
+    if 'hey' in user_msg or 'hi' in user_msg:
+        bot_reply = "Yo 👋 I'm MrPapi CyBot — your digital buddy!"
+    elif 'who' in user_msg:
+        bot_reply = "I’m MrPapi CyBot — born in Render labs 💥"
+    elif 'bye' in user_msg:
+        bot_reply = "Later! Keep vibing 😎"
     else:
-        bot_text = random.choice(cyborg_replies)
-
-    return jsonify({'reply': bot_text})
-
-@app.route('/healthz')
-def health_check():
-    return "OK", 200
+        bot_reply = random.choice(responses)
+    return jsonify({"reply": bot_reply})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000)
+    app.run(debug=True)
