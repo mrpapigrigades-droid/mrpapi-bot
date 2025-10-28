@@ -1,4 +1,2 @@
 flask
-transformers
-torch
-pyttsx3
+gunicorn

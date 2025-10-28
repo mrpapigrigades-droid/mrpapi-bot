@@ -1,39 +1,41 @@
 from flask import Flask, render_template, request, jsonify
-from transformers import AutoModelForCausalLM, AutoTokenizer
-import torch
-import pyttsx3
+import random
 
 app = Flask(__name__)
 
-# Load tokenizer & model
-tokenizer = AutoTokenizer.from_pretrained("./model")
-model = AutoModelForCausalLM.from_pretrained("./model")
+# --- Simple AI responses ---
+cyborg_replies = [
+    "Greetings, human. I am CyBot, MrPapi’s AI assistant 🤖",
+    "Running a quick scan... everything looks stable ⚡",
+    "Cyborg online — how can I assist you today?",
+    "Processing that... one sec 🧠",
+    "MrPapi mode activated! Ready to chat 🔥"
+]
 
-# TTS setup (male voice)
-engine = pyttsx3.init()
-voices = engine.getProperty('voices')
-for v in voices:
-    if "male" in v.name.lower():
-        engine.setProperty('voice', v.id)
-        break
-engine.setProperty('rate', 160)
-
-@app.route("/")
+@app.route('/')
 def home():
-    return render_template("index.html")
+    return render_template('index.html')
 
-@app.route("/ask", methods=["POST"])
-def ask():
-    user_input = request.json.get("message")
-    inputs = tokenizer.encode(user_input + tokenizer.eos_token, return_tensors="pt")
-    outputs = model.generate(inputs, max_length=200, pad_token_id=tokenizer.eos_token_id)
-    response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+@app.route('/get', methods=['POST'])
+def chatbot_reply():
+    user_msg = request.form.get('msg').lower()
 
-    # Speak response
-    engine.say(response)
-    engine.runAndWait()
+    if "hello" in user_msg or "hi" in user_msg:
+        bot_text = "Hey there! I’m MrPapi CyBot 👾 How are you feeling today?"
+    elif "name" in user_msg:
+        bot_text = "I’m CyBot — a smart assistant built by MrPapi 💪"
+    elif "who" in user_msg:
+        bot_text = "I’m VincentAI, your friendly dark-mode cyborg assistant 🤖"
+    elif "help" in user_msg:
+        bot_text = "Sure! I can chat, give info, and make your day smoother 😎"
+    else:
+        bot_text = random.choice(cyborg_replies)
 
-    return jsonify({"response": response})
+    return jsonify({'reply': bot_text})
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+@app.route('/healthz')
+def health_check():
+    return "OK", 200
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=10000)

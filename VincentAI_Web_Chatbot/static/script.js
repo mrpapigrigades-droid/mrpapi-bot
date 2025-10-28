@@ -1,24 +1,22 @@
 async function sendMessage() {
-  const input = document.getElementById("user-input");
-  const message = input.value.trim();
-  if (!message) return;
+    const input = document.getElementById("user-input");
+    const msg = input.value;
+    if (!msg) return;
 
-  const chatBox = document.getElementById("chat-box");
-  chatBox.innerHTML += `<p class="user"><strong>You:</strong> ${message}</p>`;
+    const chatBox = document.getElementById("chat-box");
+    chatBox.innerHTML += `<div class="user-msg">${msg}</div>`;
 
-  input.value = "";
-  chatBox.scrollTop = chatBox.scrollHeight;
+    const response = await fetch("/ask", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({message: msg})
+    }).then(res => res.json());
 
-  const response = await fetch("/get_response", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message }),
-  });
+    chatBox.innerHTML += `<div class="bot-msg">${response.response}</div>`;
 
-  const data = await response.json();
-  chatBox.innerHTML += `<p class="bot"><strong>Vincent:</strong> ${data.reply}</p>`;
-  chatBox.scrollTop = chatBox.scrollHeight;
+    // Play TTS
+    const audio = document.getElementById("tts-audio");
+    audio.src = "/static/response.mp3";
+    audio.play();
 
-  const audio = new Audio(data.audio);
-  audio.play();
-}
+    input.value = "";

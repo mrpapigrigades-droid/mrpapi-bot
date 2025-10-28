@@ -1,15 +1,14 @@
-from transformers import AutoModelForCausalLM, AutoTokenizer
-import os
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
-if not os.path.exists("./model"):
-    os.makedirs("./model")
+MODEL_PATH = "./model"
+MODEL_NAME = "distilgpt2"  # small GPT model, fast, low memory
 
 print("Downloading tokenizer...")
-tokenizer = AutoTokenizer.from_pretrained("distilgpt2")
-tokenizer.save_pretrained("./model")
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+tokenizer.save_pretrained(MODEL_PATH)
 
 print("Downloading model...")
-model = AutoModelForCausalLM.from_pretrained("distilgpt2")
-model.save_pretrained("./model")
+model = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
+model.save_pretrained(MODEL_PATH)
 
 print("Model downloaded and saved to ./model")
