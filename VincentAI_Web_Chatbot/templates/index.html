@@ -3,155 +3,118 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MrPapi CyBot 🤖</title>
+  <title>MrPapi CyBot</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Poppins", sans-serif;
-    }
-
     body {
-      background: radial-gradient(circle at top, #0f0f0f 0%, #000000 100%);
-      color: #eaeaea;
-      height: 100vh;
+      background-color: #000;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      height: 100vh;
+      margin: 0;
     }
 
     .chat-container {
-      background: rgba(20, 20, 20, 0.95);
-      border: 2px solid #00ffc8;
-      border-radius: 16px;
-      width: 90%;
-      max-width: 500px;
-      height: 80vh;
+      width: 380px;
+      height: 500px;
+      background-color: #0b0b0b;
+      border-radius: 20px;
+      box-shadow: 0 0 25px #00ffcc;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: 0 0 20px #00ffc8;
-      transition: 0.3s ease;
     }
 
     .chat-header {
-      background: linear-gradient(90deg, #00ffc8, #007fff);
-      color: #000;
-      padding: 16px;
+      background-color: #00bfff;
+      color: black;
+      font-weight: 700;
       text-align: center;
-      font-size: 1.4rem;
-      font-weight: 600;
-      letter-spacing: 1px;
+      padding: 10px;
+      font-size: 18px;
     }
 
-    #chat-box {
+    .chat-messages {
       flex: 1;
       padding: 15px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 10px;
     }
 
-    .bot-msg, .user-msg {
+    .bot-message, .user-message {
+      margin-bottom: 12px;
       padding: 10px 14px;
-      border-radius: 12px;
+      border-radius: 15px;
       max-width: 80%;
-      animation: fadeIn 0.3s ease-in-out;
+      word-wrap: break-word;
+      font-size: 15px;
     }
 
-    .user-msg {
-      align-self: flex-end;
-      background: #007fff;
-      color: white;
-    }
-
-    .bot-msg {
+    .bot-message {
+      background-color: #052b21;
       align-self: flex-start;
-      background: #222;
-      border: 1px solid #00ffc8;
-      color: #00ffc8;
+      border: 1px solid #00ff99;
     }
 
-    form {
+    .user-message {
+      background-color: #007bff;
+      align-self: flex-end;
+    }
+
+    .chat-input {
       display: flex;
       border-top: 1px solid #333;
+      background-color: #111;
     }
 
-    input {
+    .chat-input input {
       flex: 1;
-      padding: 14px;
-      background: #111;
+      padding: 10px;
       border: none;
-      color: #eaeaea;
-      font-size: 1rem;
       outline: none;
+      background: none;
+      color: #fff;
+      font-size: 15px;
     }
 
-    button {
-      background: linear-gradient(90deg, #00ffc8, #007fff);
+    .chat-input button {
+      padding: 10px 18px;
+      background-color: #00bfff;
       border: none;
-      color: black;
-      padding: 14px 18px;
-      cursor: pointer;
+      color: #000;
       font-weight: 600;
-      transition: 0.2s;
+      cursor: pointer;
+      transition: background 0.2s ease;
     }
 
-    button:hover {
-      filter: brightness(1.2);
+    .chat-input button:hover {
+      background-color: #00ffcc;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    #warning {
+      margin-top: 15px;
+      color: #ffff66;
+      font-size: 13px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
   <div class="chat-container">
     <div class="chat-header">🤖 MrPapi CyBot (Online)</div>
-    <div id="chat-box">
-      <div class="bot-msg">Hello, I’m <b>MrPapi CyBot</b>. Ready to roll 🚀</div>
+    <div id="chat-messages" class="chat-messages"></div>
+    <div class="chat-input">
+      <input id="user-input" type="text" placeholder="Type your message..." />
+      <button id="send-btn">Send</button>
     </div>
-    <form id="chat-form">
-      <input id="user-input" placeholder="Type your message..." autocomplete="off" />
-      <button type="submit">Send</button>
-    </form>
   </div>
 
-  <script>
-    const form = document.getElementById("chat-form");
-    const input = document.getElementById("user-input");
-    const chatBox = document.getElementById("chat-box");
+  <div id="warning">⚠️ CyBot can make mistakes — double-check important info!</div>
 
-    form.onsubmit = async (e) => {
-      e.preventDefault();
-      const userText = input.value.trim();
-      if (!userText) return;
-
-      addMessage("user", userText);
-      input.value = "";
-
-      const res = await fetch("/chat", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ message: userText })
-      });
-
-      const data = await res.json();
-      addMessage("bot", data.reply);
-    };
-
-    function addMessage(sender, text) {
-      const msg = document.createElement("div");
-      msg.className = sender === "user" ? "user-msg" : "bot-msg";
-      msg.innerHTML = text;
-      chatBox.appendChild(msg);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-  </script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

@@ -1,22 +1,39 @@
-async function sendMessage() {
-    const input = document.getElementById("user-input");
-    const msg = input.value;
-    if (!msg) return;
+document.addEventListener("DOMContentLoaded", () => {
+  const sendBtn = document.getElementById("send-btn");
+  const userInput = document.getElementById("user-input");
+  const chatMessages = document.getElementById("chat-messages");
 
-    const chatBox = document.getElementById("chat-box");
-    chatBox.innerHTML += `<div class="user-msg">${msg}</div>`;
+  function appendMessage(sender, text) {
+    const messageDiv = document.createElement("div");
+    messageDiv.classList.add(sender === "user" ? "user-message" : "bot-message");
+    messageDiv.innerText = text;
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
 
-    const response = await fetch("/ask", {
+  async function sendMessage() {
+    const text = userInput.value.trim();
+    if (!text) return;
+
+    appendMessage("user", text);
+    userInput.value = "";
+
+    try {
+      const response = await fetch("/chat", {
         method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({message: msg})
-    }).then(res => res.json());
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text }),
+      });
 
-    chatBox.innerHTML += `<div class="bot-msg">${response.response}</div>`;
+      const data = await response.json();
+      appendMessage("bot", data.reply);
+    } catch (error) {
+      appendMessage("bot", "⚠️ Connection error. Try again later.");
+    }
+  }
 
-    // Play TTS
-    const audio = document.getElementById("tts-audio");
-    audio.src = "/static/response.mp3";
-    audio.play();
-
-    input.value = "";
+  sendBtn.addEventListener("click", sendMessage);
+  userInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") sendMessage();
+  });
+});
