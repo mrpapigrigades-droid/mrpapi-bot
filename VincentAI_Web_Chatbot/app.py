@@ -105,8 +105,19 @@ def chat():
     bot_reply += "\n\n⚠️ CyBot can make mistakes — double-check important info!"
     return jsonify({"reply": bot_reply})
 
+
 # ======================================
-# STEP 3: RUN APP
+# STEP 3: HEALTH CHECK (for Render)
+# ======================================
+@app.route('/health')
+def health():
+    """Health check route for Render (prevents timeouts)."""
+    return "✅ App is healthy!", 200
+
+
+# ======================================
+# STEP 4: RUN APP (Render compatible)
 # ======================================
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
