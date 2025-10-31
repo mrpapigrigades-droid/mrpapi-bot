@@ -68,18 +68,13 @@ function appendMessage(sender, text, botName = "") {
     const messageDiv = document.createElement("div");
     messageDiv.classList.add(sender === "user" ? "user-message" : "bot-message");
 
+    const textSpan = document.createElement("span");
+    textSpan.classList.add("message-text");
+
     if (sender === "bot") {
-        const avatar = document.createElement("img");
-        avatar.src = "/static/cybot-avatar.png"; // Make sure this file exists
-        avatar.classList.add("avatar");
-        messageDiv.appendChild(avatar);
-
-        const textSpan = document.createElement("span");
-        textSpan.classList.add("message-text");
         textSpan.innerText = `${botName}: ${text}`;
-        messageDiv.appendChild(textSpan);
 
-        // Add to history
+        // Add to history panel
         const historyDiv = document.createElement("div");
         historyDiv.classList.add("history-item");
         historyDiv.innerText = `${botName}: ${text}`;
@@ -88,12 +83,10 @@ function appendMessage(sender, text, botName = "") {
         historyList.scrollTop = historyList.scrollHeight;
 
     } else {
-        const textSpan = document.createElement("span");
-        textSpan.classList.add("message-text");
         textSpan.innerText = text;
-        messageDiv.appendChild(textSpan);
     }
 
+    messageDiv.appendChild(textSpan);
     chatBox.appendChild(messageDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
