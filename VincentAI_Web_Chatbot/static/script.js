@@ -45,7 +45,7 @@ function appendMessage(sender, text, botName = "") {
 
     if (sender === "bot") {
         const avatar = document.createElement("img");
-        avatar.src = "/static/cybot-avatar.png"; // your avatar image
+        avatar.src = "/static/cybot-avatar.png";
         avatar.classList.add("avatar");
         messageDiv.appendChild(avatar);
 
@@ -54,7 +54,6 @@ function appendMessage(sender, text, botName = "") {
         textSpan.innerText = `${botName}: ${text}`;
         messageDiv.appendChild(textSpan);
 
-        // Add to bot history
         const historyDiv = document.createElement("div");
         historyDiv.classList.add("history-item");
         historyDiv.innerText = `${botName}: ${text}`;
