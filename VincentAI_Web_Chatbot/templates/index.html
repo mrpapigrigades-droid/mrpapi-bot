@@ -1,34 +1,91 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VincentAI Chatbot</title>
-    <link rel="stylesheet" href="/static/style.css">
+font-weight: bold;
+}
+
+
+#send-btn:hover {
+background: #00c0dd;
+}
+</style>
 </head>
 <body>
+<!-- SIDEBAR -->
+<div id="sidebar">
+<h2>📁 Chats</h2>
+<div id="history-list"></div>
+</div>
 
-    <div id="header">
-        <button id="menu-btn">☰</button>
-        <h2>MrPapi CyBot</h2>
-    </div>
 
-    <!-- Dropdown History -->
-    <div id="history-panel">
-        <h3>Chat History</h3>
-        <ul id="history-list"></ul>
-    </div>
+<!-- MAIN CHAT -->
+<div id="chat-container">
+<div id="chat-header">🤖 MrPapi CyBot</div>
+<div id="chat-messages"></div>
 
-    <!-- Chat Window -->
-    <div id="chat-container">
-        <div id="chat-messages"></div>
 
-        <div id="input-area">
-            <input type="text" id="user-input" placeholder="Type a message...">
-            <button id="send-btn">Send</button>
-        </div>
-    </div>
+<div id="chat-input">
+<input id="user-input" type="text" placeholder="Type a message..." />
+<button id="send-btn">Send</button>
+</div>
+</div>
 
-    <script src="/static/script.js"></script>
+
+<script>
+const sendBtn = document.getElementById("send-btn");
+const userInput = document.getElementById("user-input");
+const chatMessages = document.getElementById("chat-messages");
+const historyList = document.getElementById("history-list");
+
+
+function appendMessage(sender, text) {
+const messageDiv = document.createElement("div");
+messageDiv.classList.add(sender === "user" ? "user-message" : "bot-message");
+messageDiv.innerText = text;
+chatMessages.appendChild(messageDiv);
+chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+
+function addToHistory(text) {
+const item = document.createElement("div");
+item.classList.add("history-item");
+item.innerText = text.slice(0, 40) + "...";
+item.addEventListener("click", () => {
+userInput.value = text;
+});
+historyList.appendChild(item);
+}
+
+
+async function sendMessage() {
+const text = userInput.value.trim();
+if (!text) return;
+
+
+appendMessage("user", text);
+addToHistory(text);
+userInput.value = "";
+
+
+try {
+const response = await fetch("/chat", {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({ message: text }),
+});
+
+
+const data = await response.json();
+appendMessage("bot", data.reply);
+} catch (error) {
+appendMessage("bot", "⚠️ Connection error.");
+}
+}
+
+
+sendBtn.addEventListener("click", sendMessage);
+userInput.addEventListener("keypress", (e) => {
+if (e.key === "Enter") sendMessage();
+});
+</script>
 </body>
 </html>
