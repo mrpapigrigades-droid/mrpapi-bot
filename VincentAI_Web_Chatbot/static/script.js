@@ -1,100 +1,84 @@
 const sendBtn = document.getElementById("send-btn");
 const userInput = document.getElementById("user-input");
-const chatBox = document.getElementById("chat-box");
+const chatBox = document.querySelector(".chat-box");
+const historyList = document.getElementById("history-list");
 const themeBtn = document.getElementById("themeBtn");
 
-// ✅ Load saved theme
+// Load saved theme
 if (localStorage.getItem("theme") === "light") {
-    document.body.classList.remove("dark");
-    themeBtn.textContent = "🌞 Light";
+    document.body.classList.add("light");
 }
 
-// ✅ Theme toggle
+// Theme toggle
 themeBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark");
-
-    const isDark = document.body.classList.contains("dark");
-
-    if (isDark) {
-        localStorage.setItem("theme", "dark");
-        themeBtn.textContent = "🌙 Dark";
-    } else {
+    document.body.classList.toggle("light");
+    if (document.body.classList.contains("light")) {
         localStorage.setItem("theme", "light");
-        themeBtn.textContent = "🌞 Light";
+    } else {
+        localStorage.removeItem("theme");
     }
 });
 
-function timestamp() {
-    const d = new Date();
-    return `${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`;
-}
+// Send message
+sendBtn.addEventListener("click", () => {
+    const text = userInput.value.trim();
+    if (!text) return;
+    appendMessage("user", text);
+    userInput.value = "";
+    setTimeout(() => appendMessage("bot", "Echo: " + text), 300);
+});
 
-// ✅ Add message to chat
-function appendMessage(sender, text, isTyping = false) {
+function appendMessage(sender, text) {
     const messageDiv = document.createElement("div");
     messageDiv.classList.add(sender === "user" ? "user-message" : "bot-message");
 
-    // ✅ Avatar
-    const avatar = document.createElement("img");
-    avatar.classList.add("avatar");
-    avatar.src = sender === "user" ? "/static/user.png" : "/static/bot.png";
+    // Create message text span
+    const textSpan = document.createElement("span");
+    textSpan.classList.add("message-text");
+    textSpan.innerText = sender === "user" ? text : "";
 
-    // ✅ Message text
-    const content = document.createElement("div");
-    content.classList.add("message-text");
-
-    if (isTyping) {
-        content.innerHTML = `<span class="typing-dots"><span>.</span><span>.</span><span>.</span></span>`;
+    if (sender === "user") {
+        messageDiv.appendChild(textSpan);
+        chatBox.appendChild(messageDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
     } else {
-        content.textContent = text;
-    }
+        // Bot avatar
+        const avatar = document.createElement("img");
+        avatar.src = "/static/cybot-avatar.png"; // change to your avatar
+        avatar.classList.add("avatar");
+        messageDiv.appendChild(avatar);
 
-    // ✅ Timestamp
-    const time = document.createElement("div");
-    time.classList.add("timestamp");
-    time.textContent = timestamp();
+        // Typing animation
+        const typing = document.createElement("div");
+        typing.classList.add("typing-dots");
+        typing.innerHTML = "<span>•</span><span>•</span><span>•</span>";
+        messageDiv.appendChild(typing);
 
-    messageDiv.appendChild(avatar);
-    messageDiv.appendChild(content);
-    messageDiv.appendChild(time);
+        chatBox.appendChild(messageDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
 
-    chatBox.appendChild(messageDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
+        setTimeout(() => {
+            messageDiv.removeChild(typing);
+            messageDiv.appendChild(textSpan);
 
-    return content;
-}
+            // Add to history panel
+            const historyDiv = document.createElement("div");
+            historyDiv.classList.add("history-item");
 
-// ✅ Send message function
-async function sendMessage() {
-    const msg = userInput.value.trim();
-    if (!msg) return;
+            const historyAvatar = document.createElement("img");
+            historyAvatar.src = "/static/cybot-avatar.png";
+            historyAvatar.classList.add("avatar");
+            historyDiv.appendChild(historyAvatar);
 
-    appendMessage("user", msg);
-    userInput.value = "";
+            const historyText = document.createElement("span");
+            historyText.innerText = text;
+            historyDiv.appendChild(historyText);
 
-    // ✅ Bot typing animation
-    const typingBubble = appendMessage("bot", "", true);
+            // Click to resend
+            historyDiv.addEventListener("click", () => appendMessage("user", text));
 
-    try {
-        const response = await fetch("/api/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: msg })
-        });
-
-        const data = await response.json();
-
-        // ✅ Remove typing bubble & show actual reply
-        typingBubble.parentElement.remove();
-        appendMessage("bot", data.reply);
-
-    } catch (err) {
-        typingBubble.parentElement.remove();
-        appendMessage("bot", "⚠️ Error: Unable to reach CyBot.");
+            historyList.appendChild(historyDiv);
+            historyList.scrollTop = historyList.scrollHeight;
+        }, 800); // typing delay
     }
 }
-
-sendBtn.addEventListener("click", sendMessage);
-userInput.addEventListener("keypress", e => {
-    if (e.key === "Enter") sendMessage();
-});
