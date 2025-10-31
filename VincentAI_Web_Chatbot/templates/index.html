@@ -4,329 +4,35 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MrPapi CyBot</title>
-<style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #1e1e1e;
-    color: #f0f0f0;
-    transition: background-color 0.3s, color 0.3s;
-  }
-
-  body.light {
-    background-color: #f5f5f5;
-    color: #222;
-  }
-
-  .chat-container {
-    display: flex;
-    height: 90vh;
-    margin: 10px;
-    border: 1px solid #333;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  /* Chat History Panel */
-  #chat-history {
-    width: 250px;
-    background-color: #2c2c2c;
-    padding: 10px;
-    overflow-y: auto;
-  }
-
-  body.light #chat-history {
-    background-color: #ddd;
-  }
-
-  .chat-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .header {
-    background-color: #444;
-    padding: 10px;
-    font-weight: bold;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  body.light .header {
-    background-color: #ccc;
-  }
-
-  #chat-box {
-    flex: 1;
-    padding: 10px;
-    overflow-y: auto;
-    background-color: #1e1e1e;
-  }
-
-  body.light #chat-box {
-    background-color: #fafafa;
-  }
-
-  .input-area {
-    display: flex;
-    padding: 10px;
-    background-color: #333;
-  }
-
-  body.light .input-area {
-    background-color: #eee;
-  }
-
-  .input-area input {
-    flex: 1;
-    padding: 8px;
-    border: none;
-    border-radius: 4px;
-    margin-right: 5px;
-  }
-
-  .input-area button {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    background-color: #ff6600;
-    color: white;
-    cursor: pointer;
-  }
-
-  .warning {
-    text-align: center;
-    margin: 5px;
-    font-size: 0.9em;
-    color: #ff4444;
-  }
-
-  body.light .warning {
-    color: #b00;
-  }
-
-  /* User & Bot Messages */
-  .user-message {
-    text-align: right;
-    margin: 5px 0;
-    padding: 5px 10px;
-    background-color: #0066ff;
-    border-radius: 12px;
-    display: inline-block;
-    max-width: 80%;
-  }
-
-  body.light .user-message {
-    background-color: #3399ff;
-    color: #fff;
-  }
-
-  .bot-message {
-    display: flex;
-    align-items: center;
-    margin: 5px 0;
-    padding: 5px 10px;
-    background-color: #444;
-    border-radius: 12px;
-    max-width: 80%;
-  }
-
-  body.light .bot-message {
-    background-color: #ddd;
-    color: #222;
-  }
-
-  .bot-message img.avatar {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    margin-right: 8px;
-  }
-
-  /* History Panel */
-  .history-item {
-    display: flex;
-    align-items: center;
-    padding: 5px;
-    margin: 3px 0;
-    background-color: #444;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.9em;
-  }
-
-  body.light .history-item {
-    background-color: #ddd;
-    color: #222;
-  }
-
-  .history-item:hover {
-    background-color: #555;
-  }
-
-  body.light .history-item:hover {
-    background-color: #bbb;
-  }
-
-  .history-item img.avatar {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    margin-right: 8px;
-  }
-
-  /* Typing animation */
-  .typing-dots {
-    display: flex;
-    align-items: center;
-    margin-left: 8px;
-  }
-
-  .typing-dots span {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    margin: 0 2px;
-    background-color: #ff6600;
-    border-radius: 50%;
-    animation: bounce 0.6s infinite alternate;
-  }
-
-  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-
-  @keyframes bounce {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-5px); }
-  }
-
-  /* Theme button */
-  #theme-btn {
-    padding: 5px 10px;
-    border: none;
-    border-radius: 6px;
-    background-color: #ff6600;
-    color: white;
-    cursor: pointer;
-    font-size: 0.9em;
-  }
-
-</style>
+<link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
+<body class="light">
+
+<div class="theme-toggle">
+    <button id="themeBtn">🌙 Dark/Light</button>
+</div>
 
 <div class="chat-container">
-  <!-- Chat History Panel -->
-  <div id="chat-history">
-    <strong>Chat History</strong>
-    <div id="history-list"></div>
-  </div>
 
-  <!-- Main Chat Area -->
-  <div class="chat-main">
-    <div class="header">
-      🤖 MrPapi CyBot (Online)
-      <button id="theme-btn">🌙 Dark/Light</button>
+    <!-- Chat History (Bot only) -->
+    <div id="chat-history">
+        <strong>Bot History</strong>
+        <div id="history-list"></div>
     </div>
-    <div id="chat-box"></div>
-    <div class="input-area">
-      <input type="text" id="user-input" placeholder="Type your message...">
-      <button id="send-btn">Send</button>
+
+    <!-- Main Chat Area -->
+    <div class="chat-main">
+        <div class="header">🤖 MrPapi CyBot (Online)</div>
+        <div class="chat-box"></div>
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Type your message...">
+            <button id="send-btn">Send</button>
+        </div>
     </div>
-  </div>
 </div>
 
 <p class="warning">⚠️ CyBot can make mistakes — double-check important info!</p>
 
-<script>
-const sendBtn = document.getElementById("send-btn");
-const userInput = document.getElementById("user-input");
-const chatBox = document.getElementById("chat-box");
-const historyList = document.getElementById("history-list");
-const themeBtn = document.getElementById("theme-btn");
-
-// Load saved theme
-if (localStorage.getItem("theme") === "light") {
-  document.body.classList.add("light");
-}
-
-// Theme toggle
-themeBtn.addEventListener("click", () => {
-  document.body.classList.toggle("light");
-  if (document.body.classList.contains("light")) {
-    localStorage.setItem("theme", "light");
-  } else {
-    localStorage.removeItem("theme");
-  }
-});
-
-// Send message
-sendBtn.addEventListener("click", () => {
-  const text = userInput.value.trim();
-  if (!text) return;
-  appendMessage("user", text);
-  userInput.value = "";
-  // Fake bot reply
-  setTimeout(() => appendMessage("bot", "Echo: " + text), 300);
-});
-
-function appendMessage(sender, text) {
-  const messageDiv = document.createElement("div");
-
-  if (sender === "user") {
-    messageDiv.classList.add("user-message");
-    messageDiv.innerText = text;
-    chatBox.appendChild(messageDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
-  } else {
-    messageDiv.classList.add("bot-message");
-
-    // Avatar
-    const avatar = document.createElement("img");
-    avatar.src = "/static/cybot-avatar.png"; // replace with your avatar
-    avatar.classList.add("avatar");
-    messageDiv.appendChild(avatar);
-
-    // Typing animation
-    const typing = document.createElement("div");
-    typing.classList.add("typing-dots");
-    typing.innerHTML = "<span></span><span></span><span></span>";
-    messageDiv.appendChild(typing);
-
-    chatBox.appendChild(messageDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-    // Simulate typing
-    setTimeout(() => {
-      messageDiv.removeChild(typing);
-      const textNode = document.createElement("span");
-      textNode.innerText = text;
-      messageDiv.appendChild(textNode);
-
-      // Add to history
-      const historyDiv = document.createElement("div");
-      historyDiv.classList.add("history-item");
-
-      const historyAvatar = document.createElement("img");
-      historyAvatar.src = "/static/cybot-avatar.png";
-      historyAvatar.classList.add("avatar");
-      historyDiv.appendChild(historyAvatar);
-
-      const historyText = document.createElement("span");
-      historyText.innerText = text;
-      historyDiv.appendChild(historyText);
-
-      historyDiv.addEventListener("click", () => appendMessage("user", text));
-
-      historyList.appendChild(historyDiv);
-      historyList.scrollTop = historyList.scrollHeight;
-
-    }, 800); // typing delay
-  }
-}
-</script>
-
+<script src="/static/script.js"></script>
 </body>
 </html>
