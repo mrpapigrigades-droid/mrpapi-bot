@@ -1,91 +1,122 @@
 <!DOCTYPE html>
-font-weight: bold;
-}
+<html>
+<head>
+    <title>MrPapi CyBot</title>
 
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            padding: 0;
+            background: #f0f0f0;
+            transition: 0.3s;
+        }
 
-#send-btn:hover {
-background: #00c0dd;
-}
-</style>
+        body.dark {
+            background: #121212;
+            color: white;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 80px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        body.dark .chat-container {
+            background: #1e1e1e;
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 10px;
+            max-width: 70%;
+        }
+
+        .user-message {
+            background: #0d47a1;
+            color: white;
+            margin-left: auto;
+        }
+
+        .bot-message {
+            background: #eee;
+            color: black;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        body.dark .bot-message {
+            background: #333;
+            color: white;
+        }
+
+        .bot-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+        }
+
+        #themeToggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #444;
+            color: white;
+        }
+
+        body.dark #themeToggle {
+            background: white;
+            color: black;
+        }
+
+        #typingIndicator {
+            font-style: italic;
+            color: gray;
+            display: none;
+            margin-top: 5px;
+        }
+
+        .welcome {
+            animation: fadeIn 1.2s;
+            font-size: 17px;
+            opacity: 0.9;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+    </style>
 </head>
+
 <body>
-<!-- SIDEBAR -->
-<div id="sidebar">
-<h2>📁 Chats</h2>
-<div id="history-list"></div>
+
+<button id="themeToggle">🌙 Dark</button>
+
+<div class="chat-container">
+    <div class="welcome bot-message">
+        <img src="/static/cybot.png" class="bot-avatar">
+        👋 Welcome! I'm **MrPapi CyBot**.  
+    </div>
+
+    <div id="chatBox"></div>
+
+    <p id="typingIndicator">CyBot is typing...</p>
+
+    <input id="userInput" type="text" placeholder="Ask something..." style="width: 70%; padding: 10px;">
+    <button onclick="sendMessage()" style="padding: 10px;">Send</button>
 </div>
 
-
-<!-- MAIN CHAT -->
-<div id="chat-container">
-<div id="chat-header">🤖 MrPapi CyBot</div>
-<div id="chat-messages"></div>
-
-
-<div id="chat-input">
-<input id="user-input" type="text" placeholder="Type a message..." />
-<button id="send-btn">Send</button>
-</div>
-</div>
-
-
-<script>
-const sendBtn = document.getElementById("send-btn");
-const userInput = document.getElementById("user-input");
-const chatMessages = document.getElementById("chat-messages");
-const historyList = document.getElementById("history-list");
-
-
-function appendMessage(sender, text) {
-const messageDiv = document.createElement("div");
-messageDiv.classList.add(sender === "user" ? "user-message" : "bot-message");
-messageDiv.innerText = text;
-chatMessages.appendChild(messageDiv);
-chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-
-function addToHistory(text) {
-const item = document.createElement("div");
-item.classList.add("history-item");
-item.innerText = text.slice(0, 40) + "...";
-item.addEventListener("click", () => {
-userInput.value = text;
-});
-historyList.appendChild(item);
-}
-
-
-async function sendMessage() {
-const text = userInput.value.trim();
-if (!text) return;
-
-
-appendMessage("user", text);
-addToHistory(text);
-userInput.value = "";
-
-
-try {
-const response = await fetch("/chat", {
-method: "POST",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify({ message: text }),
-});
-
-
-const data = await response.json();
-appendMessage("bot", data.reply);
-} catch (error) {
-appendMessage("bot", "⚠️ Connection error.");
-}
-}
-
-
-sendBtn.addEventListener("click", sendMessage);
-userInput.addEventListener("keypress", (e) => {
-if (e.key === "Enter") sendMessage();
-});
-</script>
+<script src="/static/script.js"></script>
 </body>
 </html>
