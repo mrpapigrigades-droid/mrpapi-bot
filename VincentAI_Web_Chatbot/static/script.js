@@ -57,6 +57,8 @@ function appendMessage(sender, text) {
     messageDiv.appendChild(textSpan);
 
     chatBox.appendChild(messageDiv);
+
+    // Scroll main chat to bottom
     chatBox.scrollTop = chatBox.scrollHeight;
 
     // Add to history only if bot
@@ -64,8 +66,13 @@ function appendMessage(sender, text) {
         const historyDiv = document.createElement("div");
         historyDiv.classList.add("history-item");
         historyDiv.innerText = text;
+
+        // clicking history item sends it as a new user message
         historyDiv.addEventListener("click", () => appendMessage("user", text));
+
         historyList.appendChild(historyDiv);
+
+        // Scroll chat history to bottom
         historyList.scrollTop = historyList.scrollHeight;
     }
 }

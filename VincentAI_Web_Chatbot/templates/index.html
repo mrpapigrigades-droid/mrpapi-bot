@@ -1,38 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MrPapi CyBot</title>
-<link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MrPapi CyBot</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body class="light">
 
-<div class="theme-toggle">
-    <button id="themeBtn">🌙 Dark/Light</button>
-</div>
-
-<div class="chat-container">
-
-    <!-- Chat History (Bot only) -->
-    <div id="chat-history">
-        <strong>Bot History</strong>
-        <div id="history-list"></div>
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <button id="themeBtn">🌙 Dark/Light</button>
     </div>
 
-    <!-- Main Chat Area -->
-    <div class="chat-main">
-        <div class="header">🤖 MrPapi CyBot (Online)</div>
-        <div class="chat-box"></div>
-        <div class="input-area">
-            <input type="text" id="user-input" placeholder="Type your message...">
-            <button id="send-btn">Send</button>
+    <!-- Main Chat Container -->
+    <div class="chat-container">
+
+        <!-- Chat History Panel -->
+        <div id="chat-history" class="chat-history">
+            <strong>Bot History</strong>
+            <div id="history-list"></div>
         </div>
+
+        <!-- Main Chat Area -->
+        <div class="chat-main">
+            <div class="header">🤖 MrPapi CyBot (Online)</div>
+            <div class="chat-box"></div>
+            <div class="input-area">
+                <input type="text" id="user-input" placeholder="Type your message...">
+                <button id="send-btn">Send</button>
+            </div>
+        </div>
+
     </div>
-</div>
 
-<p class="warning">⚠️ CyBot can make mistakes — double-check important info!</p>
+    <!-- Warning -->
+    <p class="warning">⚠️ CyBot can make mistakes — double-check important info!</p>
 
-<script src="/static/script.js"></script>
+    <!-- Script -->
+    <script src="/static/script.js"></script>
 </body>
 </html>
