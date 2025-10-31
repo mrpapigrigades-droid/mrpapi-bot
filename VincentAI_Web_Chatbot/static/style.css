@@ -1,101 +1,236 @@
-/* Body themes */
-body.dark {
-    background: #0c0c0c;
+/* -------------------------
+   GENERAL PAGE
+-------------------------- */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #0f0f0f;
     color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 body.light {
-    background: #f8f8f8;
-    color: black;
+    background: #f1f1f1;
+    color: #222;
 }
 
+/* -------------------------
+   THEME BUTTON
+-------------------------- */
 .theme-toggle {
+    width: 100%;
     text-align: right;
     padding: 10px 20px;
 }
 
-.theme-toggle button {
-    padding: 6px 14px;
-    border-radius: 10px;
+#themeBtn {
+    background: #333;
     border: none;
-    background: #0babff;
-    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
     cursor: pointer;
+    font-size: 14px;
+    color: white;
 }
 
-/* Chat container */
+body.light #themeBtn {
+    background: #ddd;
+    color: black;
+}
+
+/* -------------------------
+   CHAT CONTAINER
+-------------------------- */
 .chat-container {
-    width: 420px;
-    margin: auto;
-    background: #000;
-    border-radius: 20px;
-    padding-bottom: 10px;
-    box-shadow: 0 0 25px #00eaff;
-}
-
-/* Header */
-.header {
-    background: #00eaff;
-    padding: 12px;
-    color: #000;
-    font-weight: bold;
-    text-align: center;
-    border-radius: 20px 20px 0 0;
-}
-
-/* Chat box */
-.chat-box {
-    height: 480px;
-    overflow-y: scroll;
-    padding: 20px;
-}
-
-/* Message bubbles */
-.user-msg {
-    background: #0084ff;
-    color: white;
-    padding: 10px 14px;
-    border-radius: 20px;
-    width: fit-content;
-    margin-left: auto;
-    margin-bottom: 12px;
-}
-
-.bot-msg {
-    background: #0a5;
-    color: white;
-    padding: 12px 14px;
-    border-radius: 20px;
-    width: fit-content;
-    margin-bottom: 12px;
-}
-
-/* Input area */
-.input-area {
+    width: 95%;
+    max-width: 450px;
+    margin-top: 10px;
+    background: #1a1a1a;
+    border-radius: 12px;
     display: flex;
-    gap: 5px;
+    flex-direction: column;
+    height: 82vh;
+    overflow: hidden;
+}
+
+body.light .chat-container {
+    background: #ffffff;
+    border: 1px solid #ccc;
+}
+
+/* -------------------------
+   HEADER
+-------------------------- */
+.header {
+    background: #222;
+    padding: 15px;
+    text-align: center;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+body.light .header {
+    background: #ececec;
+    color: #222;
+}
+
+/* -------------------------
+   CHAT BOX
+-------------------------- */
+.chat-box {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Scrollbar */
+.chat-box::-webkit-scrollbar {
+    width: 6px;
+}
+.chat-box::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 10px;
+}
+
+/* -------------------------
+   MESSAGE STYLES
+-------------------------- */
+.user-message,
+.bot-message {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    animation: fadeInUp 0.25s ease-in-out;
+}
+
+.user-message {
+    justify-content: flex-end;
+}
+
+.bot-message {
+    justify-content: flex-start;
+}
+
+/* Avatar */
+.avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Message Bubble */
+.message-text {
+    max-width: 65%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    line-height: 1.4;
+    font-size: 15px;
+    background: #2a2a2a;
+    color: white;
+}
+
+body.light .message-text {
+    background: #eaeaea;
+    color: #222;
+}
+
+.user-message .message-text {
+    background: #0066ff;
+}
+
+body.light .user-message .message-text {
+    background: #0080ff;
+    color: white;
+}
+
+/* Timestamp */
+.timestamp {
+    font-size: 11px;
+    opacity: 0.6;
+    margin-top: 4px;
+}
+
+/* -------------------------
+   TYPING DOTS ANIMATION
+-------------------------- */
+.typing-dots span {
+    font-size: 22px;
+    animation: blink 1s infinite;
+    opacity: 0.4;
+    margin-right: 2px;
+}
+
+.typing-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.typing-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes blink {
+    0% {opacity: 0.3;}
+    50% {opacity: 1;}
+    100% {opacity: 0.3;}
+}
+
+/* -------------------------
+   INPUT AREA
+-------------------------- */
+.input-area {
     padding: 10px;
+    background: #111;
+    display: flex;
+    gap: 10px;
+}
+
+body.light .input-area {
+    background: #e7e7e7;
 }
 
 #user-input {
-    flex: 1;
+    width: 80%;
     padding: 10px;
-    border-radius: 10px;
+    border-radius: 8px;
     border: none;
+    outline: none;
 }
 
 #send-btn {
-    padding: 10px 16px;
-    background: #00eaff;
+    width: 20%;
+    background: #0080ff;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
+    color: white;
     cursor: pointer;
     font-weight: bold;
 }
 
-/* Warning */
+/* -------------------------
+   WARNING
+-------------------------- */
 .warning {
-    text-align: center;
-    margin-top: 10px;
-    color: yellow;
+    margin-top: 5px;
+    font-size: 13px;
+    opacity: 0.7;
+}
+
+/* -------------------------
+   ANIMATIONS
+-------------------------- */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
