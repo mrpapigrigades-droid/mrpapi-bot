@@ -1,65 +1,76 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const sendBtn = document.getElementById("send-btn");
-  const userInput = document.getElementById("user-input");
-  const chatMessages = document.getElementById("chat-messages");
+    const sendBtn = document.getElementById("send-btn");
+    const userInput = document.getElementById("user-input");
+    const chatMessages = document.getElementById("chat-messages");
 
-  // ✅ Load chat history
-  let chatHistory = JSON.parse(localStorage.getItem("chat_history")) || [];
+    const menuBtn = document.getElementById("menu-btn");
+    const historyPanel = document.getElementById("history-panel");
+    const historyList = document.getElementById("history-list");
 
-  function displayHistory() {
-    chatMessages.innerHTML = "";
-    chatHistory.forEach(msg => {
-      const div = document.createElement("div");
-      div.classList.add(msg.sender === "user" ? "user-message" : "bot-message");
-      div.innerText = msg.text;
-      chatMessages.appendChild(div);
-    });
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
+    let history = JSON.parse(localStorage.getItem("history") || "[]");
 
-  displayHistory(); // ✅ Show saved messages when page loads
-
-  function saveHistory() {
-    localStorage.setItem("chat_history", JSON.stringify(chatHistory));
-  }
-
-  function addMessage(sender, text) {
-    const messageDiv = document.createElement("div");
-    messageDiv.classList.add(sender === "user" ? "user-message" : "bot-message");
-    messageDiv.innerText = text;
-    chatMessages.appendChild(messageDiv);
-
-    chatHistory.push({ sender: sender, text: text });
-    saveHistory();
-
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
-
-  async function sendMessage() {
-    const text = userInput.value.trim();
-    if (!text) return;
-
-    addMessage("user", text);
-    userInput.value = "";
-
-    try {
-      const response = await fetch("/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text }),
-      });
-
-      const data = await response.json();
-      addMessage("bot", data.reply);
-
-    } catch (error) {
-      addMessage("bot", "⚠️ Connection error.");
+    // Load history into dropdown
+    function loadHistory() {
+        historyList.innerHTML = "";
+        history.forEach(item => {
+            const li = document.createElement("li");
+            li.innerText = item;
+            li.addEventListener("click", () => {
+                userInput.value = item;
+                historyPanel.style.maxHeight = "0";
+            });
+            historyList.appendChild(li);
+        });
     }
-  }
 
-  sendBtn.addEventListener("click", sendMessage);
+    loadHistory();
 
-  userInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") sendMessage();
-  });
+    function appendMessage(sender, text) {
+        const messageDiv = document.createElement("div");
+        messageDiv.classList.add(sender === "user" ? "user-message" : "bot-message");
+        messageDiv.innerText = text;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const text = userInput.value.trim();
+        if (!text) return;
+
+        appendMessage("user", text);
+        userInput.value = "";
+
+        // SAVE to history
+        history.push(text);
+        localStorage.setItem("history", JSON.stringify(history));
+        loadHistory();
+
+        try {
+            const response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: text }),
+            });
+
+            const data = await response.json();
+            appendMessage("bot", data.reply);
+
+        } catch (error) {
+            appendMessage("bot", "⚠️ Connection error. Try again later.");
+        }
+    }
+
+    sendBtn.addEventListener("click", sendMessage);
+    userInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendMessage();
+    });
+
+    // Toggle dropdown
+    menuBtn.addEventListener("click", () => {
+        if (historyPanel.style.maxHeight === "0px" || historyPanel.style.maxHeight === "") {
+            historyPanel.style.maxHeight = "300px";
+        } else {
+            historyPanel.style.maxHeight = "0";
+        }
+    });
 });
