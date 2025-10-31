@@ -106,13 +106,16 @@
 <body>
   <div class="chat-container">
     <div class="chat-header">🤖 MrPapi CyBot (Online)</div>
+
     <div id="chat-messages" class="chat-messages"></div>
+
     <div class="chat-input">
       <input id="user-input" type="text" placeholder="Type your message..." />
       <button id="send-btn">Send</button>
     </div>
   </div>
 
+  <!-- ✅ Warning stays OUTSIDE chat (good!) -->
   <div id="warning">⚠️ CyBot can make mistakes — double-check important info!</div>
 
   <script src="{{ url_for('static', filename='script.js') }}"></script>

@@ -1,14 +1,3 @@
-from flask import Flask, render_template, request, jsonify
-import os
-import requests
-import random
-
-app = Flask(__name__)
-
-# ======================================
-# STEP 1: DOWNLOAD MODEL FROM GOOGLE DRIVE
-# ======================================
-
 def download_model_from_drive(file_id, destination):
     """Download large model file from Google Drive if not already present."""
     if not os.path.exists(destination):
@@ -31,7 +20,6 @@ os.makedirs("models", exist_ok=True)
 # Replace below with your actual Google Drive file ID
 GOOGLE_DRIVE_FILE_ID = "YOUR_FILE_ID_HERE"
 
-# Uncomment this line if you want the model to auto-download at startup
 # download_model_from_drive(GOOGLE_DRIVE_FILE_ID, MODEL_PATH)
 
 # ======================================
@@ -91,32 +79,29 @@ def chat():
     elif 'top 10 universities in kenya' in user_msg:
         bot_reply = "UoN, KU, JKUAT, Strathmore, Egerton, Moi, USIU-A, MKU, TUK, Maseno."
 
-    # Music and thanks
+    # Music / Thanks
     elif 'thank you' in user_msg or 'thanks' in user_msg:
         bot_reply = "You're welcome 🙌"
     elif 'bye' in user_msg:
         bot_reply = "Catch you later ✌️ Stay awesome!"
 
-    # Default fallback
+    # ✅ NEW: If bot has no answer → custom response
     else:
-        bot_reply = random.choice(default_responses)
+        bot_reply = "Vincent Kimani has not put that memory on me, thank you."
 
-    # Disclaimer
-    bot_reply += "\n\n⚠️ CyBot can make mistakes — double-check important info!"
     return jsonify({"reply": bot_reply})
 
 
 # ======================================
-# STEP 3: HEALTH CHECK (for Render)
+# STEP 3: HEALTH CHECK (Render)
 # ======================================
 @app.route('/health')
 def health():
-    """Health check route for Render (prevents timeouts)."""
     return "✅ App is healthy!", 200
 
 
 # ======================================
-# STEP 4: RUN APP (Render compatible)
+# STEP 4: RUN APP
 # ======================================
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
