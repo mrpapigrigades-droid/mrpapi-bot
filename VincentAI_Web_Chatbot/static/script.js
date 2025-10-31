@@ -3,11 +3,35 @@ document.addEventListener("DOMContentLoaded", () => {
   const userInput = document.getElementById("user-input");
   const chatMessages = document.getElementById("chat-messages");
 
-  function appendMessage(sender, text) {
+  // ✅ Load chat history
+  let chatHistory = JSON.parse(localStorage.getItem("chat_history")) || [];
+
+  function displayHistory() {
+    chatMessages.innerHTML = "";
+    chatHistory.forEach(msg => {
+      const div = document.createElement("div");
+      div.classList.add(msg.sender === "user" ? "user-message" : "bot-message");
+      div.innerText = msg.text;
+      chatMessages.appendChild(div);
+    });
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  displayHistory(); // ✅ Show saved messages when page loads
+
+  function saveHistory() {
+    localStorage.setItem("chat_history", JSON.stringify(chatHistory));
+  }
+
+  function addMessage(sender, text) {
     const messageDiv = document.createElement("div");
     messageDiv.classList.add(sender === "user" ? "user-message" : "bot-message");
     messageDiv.innerText = text;
     chatMessages.appendChild(messageDiv);
+
+    chatHistory.push({ sender: sender, text: text });
+    saveHistory();
+
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
@@ -15,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const text = userInput.value.trim();
     if (!text) return;
 
-    appendMessage("user", text);
+    addMessage("user", text);
     userInput.value = "";
 
     try {
@@ -26,13 +50,15 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       const data = await response.json();
-      appendMessage("bot", data.reply);
+      addMessage("bot", data.reply);
+
     } catch (error) {
-      appendMessage("bot", "⚠️ Connection error. Try again later.");
+      addMessage("bot", "⚠️ Connection error.");
     }
   }
 
   sendBtn.addEventListener("click", sendMessage);
+
   userInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter") sendMessage();
   });
