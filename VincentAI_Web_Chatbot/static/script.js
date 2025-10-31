@@ -4,17 +4,13 @@ const chatBox = document.querySelector(".chat-box");
 const historyList = document.getElementById("history-list");
 const themeBtn = document.getElementById("themeBtn");
 
-// ---------------------
-// THEME TOGGLE
-// ---------------------
+// Theme toggle
 themeBtn.addEventListener("click", () => {
     document.body.classList.toggle("light");
     document.body.classList.toggle("dark");
 });
 
-// ---------------------
-// SEND MESSAGE
-// ---------------------
+// Send message
 sendBtn.addEventListener("click", async () => {
     const text = userInput.value.trim();
     if (!text) return;
@@ -23,12 +19,10 @@ sendBtn.addEventListener("click", async () => {
     userInput.value = "";
 
     const reply = await getBotReply(text);
-    appendMessage("bot", reply);
+    appendMessage("bot", reply, "CyBot 🤖");
 });
 
-// ---------------------
-// FETCH BOT REPLY
-// ---------------------
+// Fetch bot reply
 async function getBotReply(message) {
     try {
         const response = await fetch("/chat", {
@@ -44,35 +38,37 @@ async function getBotReply(message) {
     }
 }
 
-// ---------------------
-// APPEND MESSAGE
-// ---------------------
-function appendMessage(sender, text) {
+// Append message
+function appendMessage(sender, text, botName = "") {
     const messageDiv = document.createElement("div");
     messageDiv.classList.add(sender === "user" ? "user-message" : "bot-message");
 
-    const textSpan = document.createElement("span");
-    textSpan.classList.add("message-text");
-    textSpan.innerText = text;
-    messageDiv.appendChild(textSpan);
-
-    chatBox.appendChild(messageDiv);
-
-    // Scroll main chat to bottom
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-    // Add to history only if bot
     if (sender === "bot") {
+        const avatar = document.createElement("img");
+        avatar.src = "/static/cybot-avatar.png"; // your avatar image
+        avatar.classList.add("avatar");
+        messageDiv.appendChild(avatar);
+
+        const textSpan = document.createElement("span");
+        textSpan.classList.add("message-text");
+        textSpan.innerText = `${botName}: ${text}`;
+        messageDiv.appendChild(textSpan);
+
+        // Add to bot history
         const historyDiv = document.createElement("div");
         historyDiv.classList.add("history-item");
-        historyDiv.innerText = text;
-
-        // clicking history item sends it as a new user message
+        historyDiv.innerText = `${botName}: ${text}`;
         historyDiv.addEventListener("click", () => appendMessage("user", text));
-
         historyList.appendChild(historyDiv);
-
-        // Scroll chat history to bottom
         historyList.scrollTop = historyList.scrollHeight;
+
+    } else {
+        const textSpan = document.createElement("span");
+        textSpan.classList.add("message-text");
+        textSpan.innerText = text;
+        messageDiv.appendChild(textSpan);
     }
+
+    chatBox.appendChild(messageDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
