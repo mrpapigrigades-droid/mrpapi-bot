@@ -30,7 +30,6 @@ os.makedirs("models", exist_ok=True)
 GOOGLE_DRIVE_FILE_ID = "YOUR_FILE_ID_HERE"
 # download_model_from_drive(GOOGLE_DRIVE_FILE_ID, MODEL_PATH)
 
-
 # ======================================
 # STEP 2: CHATBOT LOGIC + MEMORY FALLBACK
 # ======================================
@@ -84,7 +83,7 @@ def chat():
         bot_reply = "Yamal is a forward at FC Barcelona and for Spain."
 
     elif 'who is marcus rashford' in user_msg:
-        bot_reply = "Marcus Rashford is a forward for Manchester United."
+        bot_reply = "Marcus Rashford is a forward currently playing for FC Barcelona on loan from Manchester United."
 
     elif 'name top ten teams in the world' in user_msg:
         bot_reply = (
@@ -96,11 +95,11 @@ def chat():
         bot_reply = "Cristiano Ronaldo 👑 — the King of the Champions League."
 
     # Kenyan Facts
-    elif 'where is bang sold in kenya' in user_msg:
+    elif 'where is bang mainly sold in kenya' in user_msg:
         bot_reply = "Juja 😂"
 
-    elif 'which is the best place to live in kenya' in user_msg:
-        bot_reply = "Juja or Runda depending on your lifestyle."
+    elif 'what is insomnia' in user_msg:
+        bot_reply = "Insomnia is a common sleep disorder characterized by difficulty falling or staying asleep, which can lead to daytime fatigue, irritability, and concentration problems."
 
     elif 'what is the kenyan currency' in user_msg:
         bot_reply = "Kenyan Shilling (KES)."
@@ -111,6 +110,37 @@ def chat():
             "USIU-A, MKU, TUK, Maseno."
         )
 
+    # Additional Questions / Entertainment / Trending
+    elif 'who is king von' in user_msg:
+        bot_reply = "King Von was an American rapper from Chicago, known for his storytelling and drill music."
+
+    elif 'who is vinicius junior' in user_msg or 'vinícius junior' in user_msg:
+        bot_reply = "Vinícius Júnior is a Brazilian footballer who plays as a winger for Real Madrid and the Brazil national team."
+
+    elif 'what is tech' in user_msg or 'technology' in user_msg:
+        bot_reply = "Tech (technology) refers to tools, systems, and methods created to solve problems or improve human life."
+
+    elif 'who is raila' in user_msg:
+        bot_reply = "RIP Raila Odinga 🕊️, a legendary Kenyan politician and former Prime Minister. 0001"
+
+    elif 'who is gachagua' in user_msg:
+        bot_reply = "Rigathi Gachagua is the former Deputy President of Kenya."
+
+    elif 'who is haaland' in user_msg:
+        bot_reply = "Erling Haaland is a Norwegian striker playing for Manchester City and known for his incredible goal-scoring abilities."
+
+    elif 'rap music' in user_msg:
+        bot_reply = "Rap music is a genre where artists rhythmically speak or chant lyrics over a beat. It’s a key part of hip-hop culture."
+
+    elif 'trending' in user_msg:
+        bot_reply = "Trending topics change all the time. Check social media like Twitter or Instagram to see what's hot today!"
+
+    elif 'what is otf' in user_msg:
+        bot_reply = "OTF stands for 'Only The Family', a rap collective founded by Lil Durk."
+
+    elif 'who is nba youngboy' in user_msg:
+        bot_reply = "NBA YoungBoy, also known as YoungBoy Never Broke Again, is an American rapper from Baton Rouge, Louisiana."
+
     # Thanks + Bye
     elif 'thank you' in user_msg or 'thanks' in user_msg:
         bot_reply = "You're welcome 🙌"
@@ -120,13 +150,9 @@ def chat():
 
     # Fallback (Memory not found)
     else:
-        bot_reply = (
-            "Vincent Kimani has not put that memory on me yet. "
-            "Try ask another question 😊"
-        )
+        bot_reply = "Vincent Kimani has not put that memory on me yet. Try ask another question 😊"
 
     return jsonify({"reply": bot_reply})
-
 
 # ======================================
 # STEP 3: HEALTH CHECK
@@ -135,7 +161,6 @@ def chat():
 @app.route('/health')
 def health():
     return "✅ App is healthy!", 200
-
 
 # ======================================
 # STEP 4: RUN APP (FOR RENDER)
